@@ -7,7 +7,7 @@
   <div class="right">     
     <a href="#">
       <i class="fa-solid fa-user fa-sm" style="color: #000000;"></i>
-      <span>{{nombre}}</span>
+      <span>{{usuario}}</span>
     </a>
   </div>
 </nav>
@@ -17,9 +17,12 @@
 import { mapState } from 'vuex';
 export default {
   name:'NavBar',
-  props:{
-      nombre: String
+  computed:{
+    ...mapState({
+      usuario:"usuario",
+    })
   }
+ 
 } 
 </script>
 

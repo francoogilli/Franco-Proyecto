@@ -7,5 +7,7 @@
 </template>
 
 <style>
-
+body{
+  overflow: hidden;
+}
 </style>

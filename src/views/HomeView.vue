@@ -1,5 +1,5 @@
 <template>
-  <NavBar :nombre="'francoogilli'" />
+  <NavBar />
   <div class="container">
     <Comprar/>
     <Vender/>

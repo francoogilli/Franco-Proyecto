@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import { useStore } from 'vuex';
 export default {
   name: 'LoginView',
   data() {
@@ -37,8 +38,11 @@ export default {
   },
   methods: {
     validarFormulario() {
+      
       if (this.usuario.trim().length > 0) {
-        // Si se ingresó al menos un carácter, redirigir a la vista 'Home'
+        // Si se ingresó al menos un carácter, guardar el nombre de usuario en el store
+        this.$store.commit('actualizarUsuario', this.usuario);
+        // Redirigir a la vista 'Home'
         this.$router.push('/home');
       } else {
         // Mostrar el mensaje de error

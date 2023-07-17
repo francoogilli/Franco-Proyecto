@@ -17,14 +17,14 @@ body{
 
 .card{
     
-    max-width: 350px;
+    max-width: 21.875rem;
     height: auto;
     display: flex;
     justify-content: center;
-    border-radius: 34px;
-    padding: 24px 52px;
+    border-radius: 2.125rem;
+    padding: 1.5rem 3.25rem;
     background: #ebeef1;
-    box-shadow: 10px 10px 10px -1px rgba(10,99,169,0.16),
+    box-shadow: 0.625rem 0.625rem 0.625rem -1px rgba(10,99,169,0.16),
     -10px -10px 10px -1px rgba(255,255,255,0.7);
 }
 .card.wrapper{
@@ -34,12 +34,12 @@ body{
     flex-direction: column;
 }
 .profile{
-    width: 100px;
-    height: 100px;
+    width: 6.25rem;
+    height: 6.25rem;
     border-radius: 50%;
-    border: 2px solid rgba(255,255,255,0.3);
-    box-shadow: 10px 10px 10px -1px rgba(10,99,169,0.16),
-    -10px -10px 10px -1px rgba(255, 255, 255, 0.7);
+    border: 0.125rem solid rgba(255,255,255,0.3);
+    box-shadow: 0.625rem 0.625rem 0.625rem -1px rgba(10,99,169,0.16),
+    -10px -10px 0.625rem -1px rgba(255, 255, 255, 0.7);
     overflow: hidden;
 }
 
@@ -52,7 +52,7 @@ body{
 }
 .wrapper h2{
     color: rgba(0,0,0,0.8);
-    margin-top: 20px;
+    margin-top: 1.25rem;
     font-size: 2rem;
     display: grid;
 }
@@ -61,14 +61,14 @@ body{
     justify-content: center;
 }
 .material-symbols-outlined{
-    padding: 20px;
+    padding: 1.25rem;
 }
 
 .wrapper p{
     line-height: 1.6;
-    font-size: 25px;
+    font-size: 1.375rem;
     font-weight: bold;
-    margin: 10px 0;
+    margin: 0.625rem 0;
     text-align: center;
     color: rgb(0,0,0,);
 }
@@ -76,14 +76,14 @@ body{
 .wrapper button{
     display: inline-block;
     background-color: #ebeef1;
-    padding: 12px 19px;
-    border-radius: 20px;
+    padding: 0.75rem 1.1875rem;
+    border-radius: 1.25rem;
     border: none;
     text-decoration: none;
     text-transform: uppercase;
     cursor: pointer;
-    letter-spacing: 1.6px;
-    margin-top: 16px;
+    letter-spacing: 0.1rem;
+    margin-top: 1rem;
     font-weight: 900;
     color: rgba(0,0,0,0.8);
     box-shadow: 10px 10px 10px -1px rgba(10,99,169,0.16), -10px -10px 10px -1px rgba(255,255,255,0.7);
@@ -96,39 +96,36 @@ body{
 .modal {
     position: fixed;
     top: 50%;
-    border-radius: 20px;
+    border-radius: 1.25rem;
     font-family: 'Poppins';
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: #ebeef1;
-    padding: 20px;
-    border: 1px solid #ccc;
-    width: 499px;
-    height: 490px;
+    padding: 1.25rem;
+    border: 0.0625rem solid #ccc;
+    width: 31.1875rem;
+    height: 30.625rem;
 }
 
 .modal .material-symbols-outlined{
     position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 29px;
+    top: 0.625rem;
+    right: 0.625rem;
+    font-size: 1.8125rem;
     color: rgb(44, 44, 44);
     cursor: pointer;
     padding: 0px;
     font-weight: bold;
 }
 .modal #expand_more{
-    top: 15px;
+    top: 0.9375rem;
 }
 
-.modal::backdrop{
-    backdrop-filter: blur(6px);
-    
-}
+
 .modal .card{
-    max-width: 394px;
-    margin-left: 32px;
-    margin-top: 86px;
+    max-width: 24.625rem;
+    margin-left: 2rem;
+    margin-top: 5.375rem;
     background: #1dff3f;
 }
 
@@ -152,7 +149,7 @@ body{
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-radius: 20px;
+    border-radius: 1.25rem;
     font-weight: bold;
     padding: 1em;
     cursor: pointer;
@@ -191,7 +188,7 @@ body{
     padding: 0.2em 0.5em;
     background: #ebeef1;
     box-shadow: 10px 10px 10px -1px rgba(10,99,169,0.16), -10px -10px 10px -1px rgba(255,255,255,0.7);
-    border-radius: 20px;
+    border-radius: 1.25rem;
     color: #424242;
     position: absolute;
     top: 3em;
@@ -207,13 +204,13 @@ body{
 .menu li{
     padding: 0.7em 0.5em;
     margin: 0.3em 0;
-    border-radius: 12px;
+    border-radius: 0.75rem;
     cursor: pointer;
 }
 
 .menu li:hover{
     background: #dce2e9;
-    border-radius: 12px;
+    border-radius: 0.75rem;
 }
 
 .active{
@@ -223,25 +220,25 @@ body{
 .menu-open{
     display: block;
     opacity: 1;
-    margin-top: 22px;
+    margin-top: 1.375rem;
 }
 
 
 .input-field {
-    max-width: 394px;
+    max-width: 24.625rem;
     width: 100%;
     background-color: #f2f2f2;;
-    margin: 10px 0;
-    margin-left: 32px;
-    height: 55px;
-    border-radius: 20px;
+    margin: 0.625rem 0;
+    margin-left: 2rem;
+    height: 3.4375rem;
+    border-radius: 1.25rem;
     display: grid;
     padding: 0 0.4rem;
     position: relative;
     border: none;
       background: transparent;
-      padding: 0 20px;
-      font-size: 18px;
+      padding: 0 1.25rem;
+      font-size: 1.125rem;
       box-sizing: border-box;
       outline: none;
       box-shadow: -4px -4px 10px rgba(255,255,255,1),
@@ -269,21 +266,21 @@ body{
 
 
   .btn {
-    width: 150px;
+    width: 9.375rem;
     background-color:rgb(236, 240, 243);
     border: none;
     outline: none;
-    height: 49px;
-    border-radius: 20px;
+    height: 3.0625rem;
+    border-radius: 1.25rem;
     color: #272727;
     text-transform: uppercase;
     font-weight: bold;
-    font-size: 15px;
-    margin: 10px 0;
-    margin-left: 150px;
+    font-size: 0.9375rem;
+    margin: 0.625rem 0;
+    margin-left: 9.375rem;
     cursor: pointer;
     transition: 0.5s;
-    box-shadow: 0 1px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0.0625rem 0.9375rem rgba(0, 0, 0, 0.2);
   }
   
   .btn:active{

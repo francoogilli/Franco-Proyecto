@@ -1,20 +1,28 @@
-import { createStore } from 'vuex'
+import { createStore } from 'vuex';
+import createPersistedState from 'vuex-persistedstate';
 
 export default createStore({
   state: {
-    usuario:"francooii"
+    usuario: '',
   },
   getters: {
+
   },
   mutations: {
     actualizarUsuario(state, nuevoUsuario) {
       state.usuario = nuevoUsuario;
-    }
+    },
   },
   actions: {
+
   },
   modules: {
-  }
-})
 
-
+  },
+  plugins: 
+  [createPersistedState({ 
+    
+    storage: window.sessionStorage 
+    
+  })], // Usa sessionStorage como almacenamiento
+});

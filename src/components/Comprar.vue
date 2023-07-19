@@ -39,6 +39,7 @@
 
 <script>
 import axios from 'axios';
+import { mapState } from 'vuex';
 
 export default {
   name: 'Comprar',
@@ -50,6 +51,7 @@ export default {
       selectedOption: "BTC",
       cantidad: 1, // La cantidad ingresada por defecto será 1
       precio: null, // Para almacenar el precio obtenido de la API
+      fechaHoraCompra: null
     };
   },
   computed: {
@@ -62,6 +64,9 @@ export default {
       }
       return '0.00';
     },
+    ...mapState({
+      usuario:"usuario",
+    })
   },
   methods: {
     toggleMenu() {
@@ -72,6 +77,40 @@ export default {
       this.menuOpen = false;
     },
     comprar() {
+
+      if (this.cantidad > 0) {
+        const fechaHoraActual = new Date();
+        
+        // Formatear la fecha y hora en "DD-MM-YYYY hh:mm"
+        const dia = String(fechaHoraActual.getDate()).padStart(2, '0');
+        const mes = String(fechaHoraActual.getMonth() + 1).padStart(2, '0');
+        const anio = fechaHoraActual.getFullYear();
+        const horas = String(fechaHoraActual.getHours()).padStart(2, '0');
+        const minutos = String(fechaHoraActual.getMinutes()).padStart(2, '0');
+
+        this.fechaHoraCompra = `${dia}-${mes}-${anio} ${horas}:${minutos}`;
+        let json={ 
+          "user_id":this.usuario,
+          "action": "purchase", 
+          "crypto_code":this.selectedOption, 
+          "crypto_amount":this.cantidad, 
+          "money":this.precioTotal,
+          "datetime":this.fechaHoraCompra 
+        }
+        axios.post('https://labor3-d60e.restdb.io/rest/transactions',json,{
+          headers:{
+            'Content-Type':'application/json',
+            'x-apikey':'64a2e9bc86d8c525a3ed8f63',
+          },
+        }).then(data=>{
+          console.log(data)
+        })
+        .catch(error => {
+          console.error('Error al realizar la solicitud POST:', error);
+        })
+        
+        
+      }
 
     },
     actualizarPrecio() {

@@ -72,22 +72,9 @@ export default {
       this.menuOpen = false;
     },
     comprar() {
-      // Validamos que la cantidad sea mayor que cero antes de hacer la petición
-      if (this.cantidad > 0) {
-        axios.get(`https://criptoya.com/api/bybit/${this.selectedOption.toLowerCase()}/ars/${this.cantidad}`)
-          .then(response => {
-            this.precio = parseFloat(response.data.ask);
-          })
-          .catch(error => {
-            console.error('Error al obtener el precio:', error);
-            this.precio = null;
-          });
-      } else {
-        // Si la cantidad es cero o negativa, dejamos el precio como nulo
-        this.precio = null;
-      }
+
     },
-    fetchPrecio() {
+    actualizarPrecio() {
       // Validamos que la cantidad sea mayor que cero antes de hacer la petición
       if (this.cantidad > 0) {
         axios.get(`https://criptoya.com/api/bybit/${this.selectedOption.toLowerCase()}/ars/${this.cantidad}`)
@@ -107,17 +94,17 @@ export default {
   watch: {
     selectedOption: {
       handler() {
-        this.fetchPrecio();
+        this.actualizarPrecio();
       },
     },
     cantidad: {
       handler() {
-        this.fetchPrecio();
+        this.actualizarPrecio();
       },
     },
   },
   created() {
-    this.fetchPrecio();
+    this.actualizarPrecio();
   },
 }
 </script>

@@ -14,8 +14,8 @@
       <tr>
         <th>Crypto</th>
         <th>Cantidad</th>
-        <th>Cantidad Total en Dinero</th>
-        <th>Ganancia acumulada</th>
+        <th>Dinero</th>
+        <th>Resultado</th>
       </tr>
     </thead>
     <tbody>
@@ -82,13 +82,14 @@ table {
 }
 
 th, td {
-  border: 1px solid #dddddd;
+  border: 1px solid #e5e5e5;
   text-align: center;
   padding: 8px;
 }
 
 th {
-  background-color: #dddddd;
+  background-color: #282828;
+  color: white;
   
 }
 

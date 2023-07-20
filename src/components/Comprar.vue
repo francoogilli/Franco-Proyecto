@@ -88,7 +88,7 @@ export default {
         const horas = String(fechaHoraActual.getHours()).padStart(2, '0');
         const minutos = String(fechaHoraActual.getMinutes()).padStart(2, '0');
 
-        this.fechaHoraCompra = `${dia}-${mes}-${anio} ${horas}:${minutos}`;
+        this.fechaHoraCompra = `${mes}-${dia}-${anio} ${horas}:${minutos}`;
         let json={ 
           "user_id":this.usuario,
           "action": "purchase", 
@@ -97,10 +97,10 @@ export default {
           "money":this.precioTotal,
           "datetime":this.fechaHoraCompra 
         }
-        axios.post('https://labor3-d60e.restdb.io/rest/transactions',json,{
+        axios.post('https://laboratorio3-5459.restdb.io/rest/transactions',json,{
           headers:{
             'Content-Type':'application/json',
-            'x-apikey':'64a2e9bc86d8c525a3ed8f63',
+            'x-apikey':'64a57c2b86d8c50fe6ed8fa5',
           },
         }).then(data=>{
           console.log(data)

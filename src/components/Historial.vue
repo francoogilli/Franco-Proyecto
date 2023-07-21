@@ -38,7 +38,7 @@
     </div>
 
     <!-- Modal para editar transacción -->
-    <div v-if="editingTransaction" class="modal" id="modal-editar">
+    <!--<div v-if="editingTransaction" class="modal" id="modal-editar">
       <h2>Editar transacción</h2>
       <div class="transaction-details">
         <label><strong>Acción:</strong></label>
@@ -61,7 +61,42 @@
           <button @click="cancelarEditar">Cancelar</button>
         </div>
       </div>
+    </div>-->
+
+    <!-- Modal para editar transacción -->
+    <div v-if="editingTransaction" class="modal" id="modal-editar">
+      <h2>Editar transacción</h2>
+      <table>
+        <tr>
+          <td><strong>Acción:</strong></td>
+          <td><input v-model="editedTransaction.action" type="text" /></td>
+        </tr>
+        <tr>
+          <td><strong>Crypto:</strong></td>
+          <td><input v-model="editedTransaction.crypto_code" type="text" /></td>
+        </tr>
+        <tr>
+          <td><strong>Cantidad:</strong></td>
+          <td><input v-model="editedTransaction.crypto_amount" type="number" /></td>
+        </tr>
+        <tr>
+          <td><strong>Dinero:</strong></td>
+          <td><input v-model="editedTransaction.money" type="number" step="0.01" /></td>
+        </tr>
+        <tr>
+          <td><strong>Fecha:</strong></td>
+          <td><input v-model="editedTransaction.datetime" type="date" /></td>
+        </tr>
+        <div>
+        <div class="button-container">
+            <button @click="guardarEditar">Guardar</button>
+        </div>
+          <span class="material-symbols-outlined" id="cerrar_vender" @click="cancelarEditar">close</span>
+        </div>
+      </table>
     </div>
+
+
 
     <!-- Modal para mostrar los detalles de la transacción seleccionada -->
     <div v-if="selectedTransaction" class="modal" id="modal-ver">
@@ -218,6 +253,15 @@ table {
   overflow: hidden;
   font-weight: 400; 
 } 
+
+#modal_editar table{
+  border-collapse: collapse;
+  width: 110%;
+  margin-top: 1.375rem; 
+  border-radius: 20px;
+  overflow: hidden;
+  font-weight: 400; 
+}
 th, td {
   border: 1px solid #e5e5e5;
   text-align: center;
@@ -247,7 +291,7 @@ td button {
   cursor: pointer; /* Add cursor property to indicate it's clickable */
 } 
 .btn-edit { 
-  background-color: #0070ff; 
+  background-color: #0093ff; 
   color: white; 
 }
 .btn-delete {
@@ -274,16 +318,40 @@ td button {
   margin-top: 5.375rem;
 }
 
-#modal-editar label {
-  display: block;
-  margin-bottom: 5px;
-}
+
 #modal-editar input {
-  width: 100%;
   padding: 8px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  box-shadow: -4px -4px 10px rgba(255,255,255,1), inset 4px 4px 10px rgba(0,0,0,0.05), inset -4px -4px 10px rgba(255,255,255,1), 4px 4px 10px rgba(0,0,0,0.05);
+  font-family: 'Poppins';
+  border-radius: 14px;
+  outline: none;
+  border: none;
+  background: #ebeef1;
+  line-height: 1;
+  font-weight: 650;
+  font-size: 15px;
+  color: #3e3e3e;
+}
+
+#modal-editar .button-container {
+  display: flex;
+  justify-content: flex-end;
+  position: absolute;
+  left: 559px;
+}
+.button-container button{
+  background-color: #ebeef1;
+  padding: 0.75rem 1.1875rem;
+  border-radius: 1.25rem;
+  border: none;
+  text-decoration: none;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-weight: 900;
+  color: rgba(0,0,0,0.8);
+  box-shadow: 10px 10px 10px -1px rgba(10,99,169,0.16), -10px -10px 10px -1px rgba(255,255,255,0.7);
 }
 
  @import '../assets/home.css'

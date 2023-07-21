@@ -102,9 +102,10 @@ body{
     transform: translate(-50%, -50%);
     background-color: #ebeef1;
     padding: 1.25rem;
-    border: 0.0625rem solid #ccc;
+    
     width: 31.1875rem;
     height: 30.625rem;
+    box-shadow: 10px 10px 10px -1px rgba(10,99,169,0.16), -10px -10px 10px -1px rgba(255,255,255,0.7);
 }
 
 .modal .material-symbols-outlined{

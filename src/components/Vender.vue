@@ -2,13 +2,13 @@
   <div class="card">
     <div class="wrapper">
       <span class="material-symbols-outlined">
-        swap_vert
+        currency_bitcoin
       </span>
-      <button id="vender" @click="mostrar = true">Vender</button>
+      <button id="comprar" @click="mostrar = true">Vender</button>
     </div>
   </div>
 
-  <div class="modal" id="modal_vender" v-show="mostrar">
+  <div class="modal" id="modal_comprar" v-show="mostrar">
     <div class="dropdown">
       <div class="select" @click="toggleMenu" :class="{ 'select-clicked': menuOpen }">
         <span class="selected">{{ selectedOption }}</span>
@@ -31,7 +31,7 @@
         <p id="mostrarPrecio">{{cantidad}} {{ selectedOption }} = ${{precioTotal}}</p>
       </div>
     </div>
-    <span class="material-symbols-outlined" id="cerrar_vender" @click="mostrar = false">
+    <span class="material-symbols-outlined" id="cerrar_comprar" @click="mostrar = false">
       close
     </span>
   </div>
@@ -39,6 +39,7 @@
 
 <script>
 import axios from 'axios';
+import { mapState } from 'vuex';
 
 export default {
   name: 'Vender',
@@ -50,6 +51,7 @@ export default {
       selectedOption: "BTC",
       cantidad: 1, // La cantidad ingresada por defecto será 1
       precio: null, // Para almacenar el precio obtenido de la API
+      fechaHoraCompra: null
     };
   },
   computed: {
@@ -62,6 +64,9 @@ export default {
       }
       return '0.00';
     },
+    ...mapState({
+      usuario:"usuario",
+    })
   },
   methods: {
     toggleMenu() {
@@ -72,27 +77,48 @@ export default {
       this.menuOpen = false;
     },
     vender() {
-      // Validamos que la cantidad sea mayor que cero antes de hacer la petición
+
       if (this.cantidad > 0) {
-        axios.get(`https://criptoya.com/api/bybit/${this.selectedOption.toLowerCase()}/ars/${this.cantidad}`)
-          .then(response => {
-            this.precio = parseFloat(response.data.ask);
-          })
-          .catch(error => {
-            console.error('Error al obtener el precio:', error);
-            this.precio = null;
-          });
-      } else {
-        // Si la cantidad es cero o negativa, dejamos el precio como nulo
-        this.precio = null;
+        const fechaHoraActual = new Date();
+        
+        // Formatear la fecha y hora en "DD-MM-YYYY hh:mm"
+        const dia = String(fechaHoraActual.getDate()).padStart(2, '0');
+        const mes = String(fechaHoraActual.getMonth() + 1).padStart(2, '0');
+        const anio = fechaHoraActual.getFullYear();
+        const horas = String(fechaHoraActual.getHours()).padStart(2, '0');
+        const minutos = String(fechaHoraActual.getMinutes()).padStart(2, '0');
+
+        this.fechaHoraCompra = `${mes}-${dia}-${anio} ${horas}:${minutos}`;
+        let json={ 
+          "user_id":this.usuario,
+          "action": "sale", 
+          "crypto_code":this.selectedOption, 
+          "crypto_amount":this.cantidad, 
+          "money":this.precioTotal,
+          "datetime":this.fechaHoraCompra 
+        }
+        axios.post('https://laboratorio-36cf.restdb.io/rest/transactions',json,{
+          headers:{
+            'Content-Type':'application/json',
+            'x-apikey':'64a5ccf686d8c5d256ed8fce',
+          },
+        }).then(data=>{
+          console.log(data)
+        })
+        .catch(error => {
+          console.error('Error al realizar la solicitud POST:', error);
+        })
+        
+        
       }
+
     },
-    fetchPrecio() {
+    actualizarPrecio() {
       // Validamos que la cantidad sea mayor que cero antes de hacer la petición
       if (this.cantidad > 0) {
         axios.get(`https://criptoya.com/api/bybit/${this.selectedOption.toLowerCase()}/ars/${this.cantidad}`)
           .then(response => {
-            this.precio = parseFloat(response.data.ask);
+            this.precio = parseFloat(response.data.bid);
           })
           .catch(error => {
             console.error('Error al obtener el precio:', error);
@@ -107,26 +133,24 @@ export default {
   watch: {
     selectedOption: {
       handler() {
-        this.fetchPrecio();
+        this.actualizarPrecio();
       },
     },
     cantidad: {
       handler() {
-        this.fetchPrecio();
+        this.actualizarPrecio();
       },
     },
   },
   created() {
-    this.fetchPrecio();
+    this.actualizarPrecio();
   },
 }
 </script>
 
-
 <style scoped>
-@import '../assets/home.css';
-.modal .card {
-    
-    background: #faff1d;
+.modal .card{
+  background: rgb(255, 213, 0);
 }
+@import '../assets/home.css'
 </style>

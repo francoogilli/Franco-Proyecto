@@ -151,15 +151,15 @@ export default {
   methods: {
     formatDate(dateTimeString) {
       const date = new Date(dateTimeString);
-      return date.toLocaleDateString('es-AR', { year: 'numeric', month: 'long', day: 'numeric' });
+      return date.toLocaleDateString('es-AR', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' });
     },
     deleteTransaction(transactionId) {
-      const apiUrl = `https://laboratorio3-5459.restdb.io/rest/transactions/${transactionId}`;
+      const apiUrl = `https://laboratorio-36cf.restdb.io/rest/transactions/${transactionId}`;
 
       axios.delete(apiUrl, {
         headers: {
           'Content-Type': 'application/json',
-          'x-apikey': '64a57c2b86d8c50fe6ed8fa5',
+          'x-apikey': '64a5ccf686d8c5d256ed8fce',
         },
       })
       .then(response => {
@@ -173,10 +173,10 @@ export default {
     fetchTransactions() {
       const userId = this.usuario;
 
-      axios.get(`https://laboratorio3-5459.restdb.io/rest/transactions?q={"user_id": "${userId}"}`, {
+      axios.get(`https://laboratorio-36cf.restdb.io/rest/transactions?q={"user_id": "${userId}"}`, {
         headers: {
           'Content-Type': 'application/json',
-          'x-apikey': '64a57c2b86d8c50fe6ed8fa5',
+          'x-apikey': '64a5ccf686d8c5d256ed8fce',
         },
       })
       .then(response => {
@@ -201,13 +201,13 @@ export default {
       this.editedTransaction = { ...transaction };
     },
     guardarEditar() {
-      const apiUrl = `https://laboratorio3-5459.restdb.io/rest/transactions/${this.editingTransaction._id}`;
+      const apiUrl = `https://laboratorio-36cf.restdb.io/rest/transactions/${this.editingTransaction._id}`;
 
       axios
         .patch(apiUrl, this.editedTransaction, {
           headers: {
             'Content-Type': 'application/json',
-            'x-apikey': '64a57c2b86d8c50fe6ed8fa5', // Replace with your RestDB API Key
+            'x-apikey': '64a5ccf686d8c5d256ed8fce', // Replace with your RestDB API Key
           },
         })
         .then(response => {
@@ -353,6 +353,7 @@ td button {
   color: rgba(0,0,0,0.8);
   box-shadow: 10px 10px 10px -1px rgba(10,99,169,0.16), -10px -10px 10px -1px rgba(255,255,255,0.7);
 }
+
 
  @import '../assets/home.css'
 </style>

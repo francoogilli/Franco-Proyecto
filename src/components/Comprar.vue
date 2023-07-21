@@ -97,10 +97,10 @@ export default {
           "money":this.precioTotal,
           "datetime":this.fechaHoraCompra 
         }
-        axios.post('https://laboratorio3-5459.restdb.io/rest/transactions',json,{
+        axios.post('https://laboratorio-36cf.restdb.io/rest/transactions',json,{
           headers:{
             'Content-Type':'application/json',
-            'x-apikey':'64a57c2b86d8c50fe6ed8fa5',
+            'x-apikey':'64a5ccf686d8c5d256ed8fce',
           },
         }).then(data=>{
           console.log(data)

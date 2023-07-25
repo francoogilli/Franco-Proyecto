@@ -7,12 +7,12 @@
       </div>
     </div>
 
-    <div class="modal" id="modal_vender" v-show="mostrar">
+    <div class="modal" id="modalTable" v-show="mostrar">
       <table>
         <thead>
           <tr>
-            <th>Acción</th>
             <th>Crypto</th>
+            <th>Acción</th>
             <th>Cantidad</th>
             <th>Dinero</th>
             <th>Fecha</th>
@@ -21,8 +21,8 @@
         </thead>
         <tbody>
           <tr v-for="transaction in transactions" :key="transaction._id">
-            <td>{{ transaction.action }}</td>
             <td>{{ transaction.crypto_code }}</td>
+            <td>{{ transaction.action }}</td>
             <td>{{ transaction.crypto_amount }}</td>
             <td>${{ transaction.money }}</td>
             <td>{{ formatDate(transaction.datetime) }}</td>
@@ -34,34 +34,10 @@
           </tr>
         </tbody>
       </table>
-      <span class="material-symbols-outlined" id="cerrar_vender" @click="mostrar = false">close</span>
+      <span class="material-symbols-outlined" id="cerrarSpan" @click="mostrar = false">close</span>
     </div>
 
-    <!-- Modal para editar transacción -->
-    <!--<div v-if="editingTransaction" class="modal" id="modal-editar">
-      <h2>Editar transacción</h2>
-      <div class="transaction-details">
-        <label><strong>Acción:</strong></label>
-        <input v-model="editedTransaction.action" type="text" />
 
-        <label><strong>Crypto:</strong></label>
-        <input v-model="editedTransaction.crypto_code" type="text" />
-
-        <label><strong>Cantidad:</strong></label>
-        <input v-model="editedTransaction.crypto_amount" type="number" />
-
-        <label><strong>Dinero:</strong></label>
-        <input v-model="editedTransaction.money" type="number" step="0.01" />
-
-        <label><strong>Fecha:</strong></label>
-        <input v-model="editedTransaction.datetime" type="date" />
-
-        <div>
-          <button @click="guardarEditar">Guardar</button>
-          <button @click="cancelarEditar">Cancelar</button>
-        </div>
-      </div>
-    </div>-->
 
     <!-- Modal para editar transacción -->
     <div v-if="editingTransaction" class="modal" id="modal-editar">
@@ -91,7 +67,7 @@
         <div class="button-container">
             <button @click="guardarEditar">Guardar</button>
         </div>
-          <span class="material-symbols-outlined" id="cerrar_vender" @click="cancelarEditar">close</span>
+          <span class="material-symbols-outlined" id="cerrarSpan" @click="cancelarEditar">close</span>
         </div>
       </table>
     </div>
@@ -120,10 +96,10 @@
         </tr>
         <tr>
           <td><strong>Fecha:</strong></td>
-          <td>{{ (selectedTransaction.datetime) }}</td>
+          <td>{{ formatDate(selectedTransaction.datetime) }}</td>
         </tr>
       </table>
-      <span class="material-symbols-outlined" id="cerrar_vender" @click="selectedTransaction = null">close</span>
+      <span class="material-symbols-outlined" id="cerrarSpan" @click="selectedTransaction = null">close</span>
     </div>
   </div>
 </template>
@@ -149,17 +125,30 @@ export default {
     })
   },
   methods: {
-    formatDate(dateTimeString) {
-      const date = new Date(dateTimeString);
-      return date.toLocaleDateString('es-AR', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' });
+    formatDate(dateString) {
+      const utcDate = new Date(dateString);
+      const date = new Date(utcDate.getTime() - (utcDate.getTimezoneOffset() * -60000));
+      
+      // Use toLocaleString() to format the date and time in the local timezone
+      const options = {
+        day: 'numeric',
+        month: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: false // Use 24-hour format
+      };
+      const formattedDate = date.toLocaleString('es-AR', options);
+      
+      return formattedDate;
     },
     deleteTransaction(transactionId) {
-      const apiUrl = `https://laboratorio-36cf.restdb.io/rest/transactions/${transactionId}`;
+      const apiUrl = `https://labor3-d60e.restdb.io/rest/transactions/${transactionId}`;
 
       axios.delete(apiUrl, {
         headers: {
           'Content-Type': 'application/json',
-          'x-apikey': '64a5ccf686d8c5d256ed8fce',
+          'x-apikey': '64a2e9bc86d8c525a3ed8f63',
         },
       })
       .then(response => {
@@ -173,10 +162,10 @@ export default {
     fetchTransactions() {
       const userId = this.usuario;
 
-      axios.get(`https://laboratorio-36cf.restdb.io/rest/transactions?q={"user_id": "${userId}"}`, {
+      axios.get(`https://labor3-d60e.restdb.io/rest/transactions?q={"user_id": "${userId}"}`, {
         headers: {
           'Content-Type': 'application/json',
-          'x-apikey': '64a5ccf686d8c5d256ed8fce',
+          'x-apikey': '64a2e9bc86d8c525a3ed8f63',
         },
       })
       .then(response => {
@@ -201,13 +190,13 @@ export default {
       this.editedTransaction = { ...transaction };
     },
     guardarEditar() {
-      const apiUrl = `https://laboratorio-36cf.restdb.io/rest/transactions/${this.editingTransaction._id}`;
+      const apiUrl = `https://labor3-d60e.restdb.io/rest/transactions/${this.editingTransaction._id}`;
 
       axios
         .patch(apiUrl, this.editedTransaction, {
           headers: {
             'Content-Type': 'application/json',
-            'x-apikey': '64a5ccf686d8c5d256ed8fce', // Replace with your RestDB API Key
+            'x-apikey': '64a2e9bc86d8c525a3ed8f63', // Replace with your RestDB API Key
           },
         })
         .then(response => {
@@ -248,7 +237,7 @@ export default {
 table { 
   border-collapse: collapse;
   width: 100%;
-  margin-top: 1.375rem; 
+  margin-top: 0.4rem; 
   border-radius: 20px;
   overflow: hidden;
   font-weight: 400; 
@@ -263,9 +252,9 @@ table {
   font-weight: 400; 
 }
 th, td {
-  border: 1px solid #e5e5e5;
+  
   text-align: center;
-  padding: 8px; 
+  padding: 10px; 
   } 
 th { 
   background-color: #282828; 
@@ -285,18 +274,28 @@ td button {
   font-size: 12px;
   font-family: 'Poppins'; 
 } 
+
 .btn-view { 
   background-color: #00ff93;
   color: white;
   cursor: pointer; /* Add cursor property to indicate it's clickable */
 } 
+.btn-view:active{
+  background:#5affba;
+}
 .btn-edit { 
-  background-color: #0093ff; 
+  background-color: #0051ffe0; 
   color: white; 
 }
+.btn-edit:active{
+  background: #4981fae0;
+}
 .btn-delete {
-  background-color: #f44336;
+  background-color: #ff1100;
   color: white;
+}
+.btn-delete:active{
+  background: #ff5447;
 }
 .transaction-details {
   margin-top: 20px;
@@ -354,6 +353,16 @@ td button {
   box-shadow: 10px 10px 10px -1px rgba(10,99,169,0.16), -10px -10px 10px -1px rgba(255,255,255,0.7);
 }
 
+.button-container button:active{
+  box-shadow: -4px -4px 10px rgba(255,255,255,1), inset 4px 4px 10px rgba(0,0,0,0.05), inset -4px -4px 10px rgba(255,255,255,1), 4px 4px 10px rgba(0,0,0,0.05);
+
+}
+#modalTable table{
+  margin-top: 23px;
+}
+td:nth-child(1) {
+  font-weight: bold;
+}
 
  @import '../assets/home.css'
 </style>

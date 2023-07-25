@@ -12,7 +12,7 @@
     <div class="dropdown">
       <div class="select" @click="toggleMenu" :class="{ 'select-clicked': menuOpen }">
         <span class="selected">{{ selectedOption }}</span>
-        <span class="material-symbols-outlined" id="expand_more">
+        <span class="material-symbols-outlined" id="expand_more" :class="{ rotated: menuOpen }">
           expand_more
         </span>
       </div>
@@ -26,12 +26,14 @@
       <input type="number" min="0" v-model="cantidad" placeholder="Cantidad" />
     </div>
     <input type="submit" value="Comprar" class="btn solid" id="ingresar-btn" @click="comprar" />
+    <div v-if="compraExitosa" class="success-message">Compra realizada exitosamente</div>
+
     <div class="card">
       <div class="wrapper">
         <p id="mostrarPrecio">{{cantidad}} {{ selectedOption }} = ${{precioTotal}}</p>
       </div>
     </div>
-    <span class="material-symbols-outlined" id="cerrar_comprar" @click="mostrar = false">
+    <span class="material-symbols-outlined" id="cerrarSpan" @click="mostrar = false">
       close
     </span>
   </div>
@@ -47,11 +49,12 @@ export default {
     return {
       mostrar: false,
       menuOpen: false,
-      opciones: ["BTC", "ETH", "USDT", "USDC", "DAI"],
+      opciones: ["BTC", "ETH", "USDT", "USDC", "DAI",],
       selectedOption: "BTC",
       cantidad: 1, // La cantidad ingresada por defecto será 1
       precio: null, // Para almacenar el precio obtenido de la API
-      fechaHoraCompra: null
+      fechaHoraCompra: null,
+      compraExitosa: false
     };
   },
   computed: {
@@ -97,13 +100,18 @@ export default {
           "money":this.precioTotal,
           "datetime":this.fechaHoraCompra 
         }
-        axios.post('https://laboratorio-36cf.restdb.io/rest/transactions',json,{
+        axios.post('https://labor3-d60e.restdb.io/rest/transactions',json,{
           headers:{
             'Content-Type':'application/json',
-            'x-apikey':'64a5ccf686d8c5d256ed8fce',
+            'x-apikey':'64a2e9bc86d8c525a3ed8f63',
           },
         }).then(data=>{
-          console.log(data)
+          console.log(data);
+          this.compraExitosa = true;
+          setTimeout(() => {
+            this.compraExitosa = false; // Ocultar el mensaje después de 3 segundos
+              
+          }, 3000);
         })
         .catch(error => {
           console.error('Error al realizar la solicitud POST:', error);
@@ -149,5 +157,20 @@ export default {
 </script>
 
 <style scoped>
+.rotated {
+  transform: rotate(180deg);
+  transition: transform 0.2s ease;
+}
+.success-message {
+  font-weight: 700;
+  position: fixed;
+  top: 70%; /* Alinear el mensaje en el centro vertical de la pantalla */
+  left: 50%; /* Alinear el mensaje en el centro horizontal de la pantalla */
+  transform: translate(-50%, -50%); /* Centrar el mensaje exactamente en el centro */
+  color: rgb(0, 255, 0);
+  width: 100%;
+  display: grid;
+  place-items: center;
+}
 @import '../assets/home.css'
 </style>

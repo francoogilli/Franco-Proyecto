@@ -2,7 +2,7 @@
   <div class="card">
     <div class="wrapper">
       <span class="material-symbols-outlined">
-        currency_bitcoin
+        swap_vert
       </span>
       <button id="comprar" @click="mostrar = true">Vender</button>
     </div>
@@ -12,7 +12,7 @@
     <div class="dropdown">
       <div class="select" @click="toggleMenu" :class="{ 'select-clicked': menuOpen }">
         <span class="selected">{{ selectedOption }}</span>
-        <span class="material-symbols-outlined" id="expand_more">
+        <span class="material-symbols-outlined" id="expand_more" :class="{ rotated: menuOpen }">
           expand_more
         </span>
       </div>
@@ -31,7 +31,7 @@
         <p id="mostrarPrecio">{{cantidad}} {{ selectedOption }} = ${{precioTotal}}</p>
       </div>
     </div>
-    <span class="material-symbols-outlined" id="cerrar_comprar" @click="mostrar = false">
+    <span class="material-symbols-outlined" id="cerrarSpan" @click="mostrar = false">
       close
     </span>
   </div>
@@ -97,10 +97,10 @@ export default {
           "money":this.precioTotal,
           "datetime":this.fechaHoraCompra 
         }
-        axios.post('https://laboratorio-36cf.restdb.io/rest/transactions',json,{
+        axios.post('https://labor3-d60e.restdb.io/rest/transactions',json,{
           headers:{
             'Content-Type':'application/json',
-            'x-apikey':'64a5ccf686d8c5d256ed8fce',
+            'x-apikey':'64a2e9bc86d8c525a3ed8f63',
           },
         }).then(data=>{
           console.log(data)
@@ -151,6 +151,11 @@ export default {
 <style scoped>
 .modal .card{
   background: rgb(255, 213, 0);
+}
+.rotated {
+  transform: rotate(180deg);
+  transition: transform 0.2s ease;
+
 }
 @import '../assets/home.css'
 </style>

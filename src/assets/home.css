@@ -62,7 +62,16 @@ body{
 }
 .material-symbols-outlined{
     padding: 1.25rem;
+
 }
+
+#cerrarSpan{
+    box-shadow: 10px 10px 10px -1px rgba(10,99,169,0.16), -10px -10px 10px -1px rgba(255,255,255,0.7);
+    margin: -4px;
+    font-size: 33px;
+    border-radius: 14px;
+}
+
 
 .wrapper p{
     line-height: 1.6;
@@ -118,8 +127,14 @@ body{
     padding: 0px;
     font-weight: bold;
 }
+
+#cerrarSpan:active{
+    color: red;
+    box-shadow: -4px -4px 10px rgba(255,255,255,1), inset 4px 4px 10px rgba(0,0,0,0.05), inset -4px -4px 10px rgba(255,255,255,1), 4px 4px 10px rgba(0,0,0,0.05);
+}
 .modal #expand_more{
     top: 0.9375rem;
+    transition: transform 0.2s ease;
 }
 
 
@@ -278,22 +293,19 @@ body{
     color: #272727;
     text-transform: uppercase;
     font-weight: bold;
+    font-family: 'Poppins';
     font-size: 0.9375rem;
     margin: 0.625rem 0;
     margin-left: 9.375rem;
     cursor: pointer;
     transition: 0.5s;
-    box-shadow: 0 0.0625rem 0.9375rem rgba(0, 0, 0, 0.2);
-  }
+    box-shadow: 10px 10px 10px -1px rgba(10,99,169,0.16), -10px -10px 10px -1px rgba(255,255,255,0.7);
+}
+  
   
   .btn:active{
     box-shadow: -4px -4px 10px rgba(255,255,255,1), inset 4px 4px 10px rgba(0,0,0,0.05), inset -4px -4px 10px rgba(255,255,255,1), 4px 4px 10px rgba(0,0,0,0.05);
     color: #3d3d3d;
     transition: 0.4s;
   
-  }
-  
-  .btn:hover {
-    transition: 0.4s;
-    transform: scale(1.04);
   }

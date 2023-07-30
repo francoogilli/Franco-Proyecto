@@ -47,8 +47,8 @@ export default {
     return {
       mostrar: false,
       menuOpen: false,
-      opciones: ["BTC", "ETH", "USDT", "USDC", "DAI"],
-      selectedOption: "BTC",
+      opciones: ["AAVE" , "ADA" , "ALGO" , "AXS" , "BAT" , "BCH" , "BTC" , "BUSD" , "CHZ" , "DAI" , "DOGE" , "DOT" , "ETH" , "FTM" , "LINK" , "LTC" , "MANA" , "MATIC" , "PAXG" , "SAND" , "SHIB" , "SOL" , "TRX" , "UNI" , "USDC" , "USDP" , "USDT" , "XRP"],
+      selectedOption: "AAVE",
       cantidad: 1, // La cantidad ingresada por defecto será 1
       precio: null, // Para almacenar el precio obtenido de la API
       fechaHoraCompra: null
@@ -56,14 +56,15 @@ export default {
   },
   computed: {
     precioTotal() {
-      if (this.precio && this.cantidad) {
-
-        const precioTotal = this.cantidad * this.precio;
-        return Math.round(precioTotal).toLocaleString();
-        
-      }
-      return '0.00';
-    },
+    if (this.precio && this.cantidad) {
+      const precioTotal = this.cantidad * this.precio;
+      return precioTotal.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    }
+    return '0.00';
+  },
     ...mapState({
       usuario:"usuario",
     })
@@ -97,10 +98,10 @@ export default {
           "money":this.precioTotal,
           "datetime":this.fechaHoraCompra 
         }
-        axios.post('https://labor3-d60e.restdb.io/rest/transactions',json,{
+        axios.post('https://laboratorio-36cf.restdb.io/rest/transactions',json,{
           headers:{
             'Content-Type':'application/json',
-            'x-apikey':'64a2e9bc86d8c525a3ed8f63',
+            'x-apikey':'64a5ccf686d8c5d256ed8fce',
           },
         }).then(data=>{
           console.log(data)
@@ -116,7 +117,7 @@ export default {
     actualizarPrecio() {
       // Validamos que la cantidad sea mayor que cero antes de hacer la petición
       if (this.cantidad > 0) {
-        axios.get(`https://criptoya.com/api/bybit/${this.selectedOption.toLowerCase()}/ars/${this.cantidad}`)
+        axios.get(`https://criptoya.com/api/bitso/${this.selectedOption.toLowerCase()}/ars/${this.cantidad}`)
           .then(response => {
             this.precio = parseFloat(response.data.bid);
           })
@@ -156,6 +157,37 @@ export default {
   transform: rotate(180deg);
   transition: transform 0.2s ease;
 
+}
+
+.menu {
+  max-height: 341px; /* Set the maximum height for the menu to create a scrollbar */
+  overflow-y: auto; /* Enable vertical scrollbar when the content overflows */
+  scrollbar-width: thin; /* For Firefox */
+}
+
+/* Customize the scrollbar for WebKit browsers (Chrome, Safari, Opera) */
+.menu::-webkit-scrollbar {
+  width: 8px;
+}
+
+.menu::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 8px;
+}
+
+.menu::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+
+/* Customize the scrollbar for other browsers */
+
+
+.menu::-webkit-scrollbar-thumb {
+  background-color: #888;
+}
+
+.menu::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
 }
 @import '../assets/home.css'
 </style>

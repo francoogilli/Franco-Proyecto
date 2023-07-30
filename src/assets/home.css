@@ -176,7 +176,7 @@ body{
 
 .select-clicked{
     box-shadow: 10px 10px 10px -1px rgba(10,99,169,0.16), -10px -10px 10px -1px rgba(255,255,255,0.7);
-    
+    font-weight: 900;
 
 }
 
@@ -232,6 +232,7 @@ body{
 
 .active{
     background: #dce2e9;
+    font-weight: 600;
 }
 
 .menu-open{
@@ -253,12 +254,12 @@ body{
     padding: 0 0.4rem;
     position: relative;
     border: none;
-      background: transparent;
-      padding: 0 1.25rem;
-      font-size: 1.125rem;
-      box-sizing: border-box;
-      outline: none;
-      box-shadow: -4px -4px 10px rgba(255,255,255,1),
+    background: transparent;
+    padding: 0 1.25rem;
+    font-size: 1.125rem;
+    box-sizing: border-box;
+    outline: none;
+    box-shadow: -4px -4px 10px rgba(255,255,255,1),
                  inset 4px 4px 10px rgba(0,0,0,0.05),
                  inset -4px -4px 10px rgba(255,255,255,1),
                  4px 4px 10px rgba(0,0,0,0.05)

@@ -143,12 +143,12 @@ export default {
       return formattedDate;
     },
     deleteTransaction(transactionId) {
-      const apiUrl = `https://labor3-d60e.restdb.io/rest/transactions/${transactionId}`;
+      const apiUrl = `https://laboratorio-36cf.restdb.io/rest/transactions/${transactionId}`;
 
       axios.delete(apiUrl, {
         headers: {
           'Content-Type': 'application/json',
-          'x-apikey': '64a2e9bc86d8c525a3ed8f63',
+          'x-apikey': '64a5ccf686d8c5d256ed8fce',
         },
       })
       .then(response => {
@@ -162,10 +162,10 @@ export default {
     fetchTransactions() {
       const userId = this.usuario;
 
-      axios.get(`https://labor3-d60e.restdb.io/rest/transactions?q={"user_id": "${userId}"}`, {
+      axios.get(`https://laboratorio-36cf.restdb.io/rest/transactions?q={"user_id": "${userId}"}`, {
         headers: {
           'Content-Type': 'application/json',
-          'x-apikey': '64a2e9bc86d8c525a3ed8f63',
+          'x-apikey': '64a5ccf686d8c5d256ed8fce',
         },
       })
       .then(response => {
@@ -190,13 +190,13 @@ export default {
       this.editedTransaction = { ...transaction };
     },
     guardarEditar() {
-      const apiUrl = `https://labor3-d60e.restdb.io/rest/transactions/${this.editingTransaction._id}`;
+      const apiUrl = `https://laboratorio-36cf.restdb.io/rest/transactions/${this.editingTransaction._id}`;
 
       axios
         .patch(apiUrl, this.editedTransaction, {
           headers: {
             'Content-Type': 'application/json',
-            'x-apikey': '64a2e9bc86d8c525a3ed8f63', // Replace with your RestDB API Key
+            'x-apikey': '64a5ccf686d8c5d256ed8fce', // Replace with your RestDB API Key
           },
         })
         .then(response => {

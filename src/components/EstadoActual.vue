@@ -15,7 +15,8 @@
           <th>Crypto</th>
           <th>Cantidad Neta</th>
           <th>Valor en Dinero</th>
-          <th>Resultado</th> 
+          
+          <th>Resultado</th> <!-- Nueva columna agregada -->
         </tr>
       </thead>
       <tbody>
@@ -23,9 +24,10 @@
           <td>{{ crypto_code }}</td>
           <td>{{ amount.cryptoAmount.toFixed(6) }}</td>
           <td>${{ amount.valueInMoney.toLocaleString('es-AR') }}</td>
-          <td :class="{'ganancia': getTotalGain(amount) >= 0, 'perdida': getTotalGain(amount) < 0}">
-            {{ getTotalGain(amount).toLocaleString('es-AR', { style: 'currency', currency: 'ARS', signDisplay: 'always' }) }}
-          </td>
+          
+          <td :class="{'ganancia': gananciaPerdida(amount) > 0, 'perdida': gananciaPerdida(amount) < 0}">
+        ${{ gananciaPerdida(amount).toFixed(2) }}
+      </td>
         </tr>
       </tbody>
     </table>
@@ -48,20 +50,20 @@ export default {
   computed: {
     ...mapState({
       usuario: "usuario",
-    })
+    }),
   },
   methods: {
-    getTotalGain(amount) {
-      return amount.ganancia + amount.cryptoAmount * amount.ask;
+    gananciaPerdida(amount) {
+      return amount.ganancia + amount.askInMoney;
     },
     async fetchTransactions(userId) {
-      const apiUrl = `https://labor3-d60e.restdb.io/rest/transactions?q={"user_id": "${userId}"}`;
-      const apiKey = '64a2e9bc86d8c525a3ed8f63'; // Reemplaza "TU_API_KEY" por tu API Key proporcionada por la API
-      
+      const apiUrl = `https://laboratorio-36cf.restdb.io/rest/transactions?q={"user_id": "${userId}"}`;
+      const apiKey = '64a5ccf686d8c5d256ed8fce'; // Reemplaza "TU_API_KEY" por tu API Key proporcionada por la API
+
       const config = {
         headers: {
-          'x-apikey': apiKey
-        }
+          'x-apikey': apiKey,
+        },
       };
 
       try {
@@ -73,18 +75,18 @@ export default {
       }
     },
 
-    async fetchCryptoValue(crypto_code) {      
-      const apiUrl = `https://criptoya.com/api/bybit/${crypto_code.toLowerCase()}/ars/1`;
+    async fetchCryptoValue(crypto_code) {
+      const apiUrl = `https://criptoya.com/api/bitso/${crypto_code.toLowerCase()}/ars/1`;
 
       try {
         const response = await axios.get(apiUrl);
-        return {
-          bid: parseFloat(response.data.bid),
-          ask: parseFloat(response.data.ask),
-        };
+        const cryptoValue = parseFloat(response.data.bid);
+        const valueCrypto = parseFloat(response.data.ask);
+
+        return [valueCrypto, cryptoValue];
       } catch (error) {
         console.error(`Error al obtener el precio de ${crypto_code}:`, error);
-        return { bid: 0, ask: 0 };
+        return [0, 0];
       }
     },
 
@@ -97,7 +99,13 @@ export default {
         const moneyValue = parseFloat(money);
 
         if (!cryptoAmounts[crypto_code]) {
-          cryptoAmounts[crypto_code] = { cryptoAmount: 0, valueInMoney: 0, ganancia: 0, ask: 0 };
+          cryptoAmounts[crypto_code] = {
+            cryptoAmount: 0,
+            askInMoney: 0,
+            valueInMoney: 0,
+            ganancia: 0,
+            precioCompra: 0,
+          };
         }
 
         if (action === 'purchase') {
@@ -106,13 +114,17 @@ export default {
         } else if (action === 'sale') {
           cryptoAmounts[crypto_code].cryptoAmount -= amount;
           cryptoAmounts[crypto_code].ganancia += moneyValue; // Sumar el valor en dinero (money) para ventas
-          const cryptoValue = await this.fetchCryptoValue(crypto_code);
-          cryptoAmounts[crypto_code].ask = cryptoValue.ask;
         }
-        
-        const cryptoValue = await this.fetchCryptoValue(crypto_code);
-        const valueInMoney = cryptoValue.bid * cryptoAmounts[crypto_code].cryptoAmount;
-        cryptoAmounts[crypto_code].valueInMoney = Math.round(valueInMoney);
+
+        const [valueCrypto, cryptoValue] = await this.fetchCryptoValue(crypto_code);
+        const valueInMoney = cryptoValue * cryptoAmounts[crypto_code].cryptoAmount;
+        const askInMoney = valueCrypto * cryptoAmounts[crypto_code].cryptoAmount;
+        cryptoAmounts[crypto_code].valueInMoney = valueInMoney;
+        cryptoAmounts[crypto_code].askInMoney = askInMoney;
+
+        // Agregar el cálculo de ganancia o pérdida considerando el precio de compra
+        const precioCompraTotal = cryptoAmounts[crypto_code].precioCompra * cryptoAmounts[crypto_code].cryptoAmount;
+        cryptoAmounts[crypto_code].ganancia += precioCompraTotal;
       }
 
       return cryptoAmounts;
@@ -140,7 +152,6 @@ export default {
       console.error('Error en el proceso:', error);
     }
   },
-  
 };
 </script>
 
@@ -159,7 +170,7 @@ table {
 }
 
 th, td {
-  border: 1px solid #e5e5e5;
+  
   text-align: center;
   padding: 8px;
 }
@@ -176,17 +187,19 @@ tr:nth-child(even) {
 td:nth-child(1) {
   font-weight: bold;
 }
+
+@import '../assets/home.css';
+
+/* Estilos para las celdas de ganancia o pérdida */
 td.ganancia {
-  color: white;
+  background: rgb(0, 255, 0);
   font-weight: bold;
-  background: #00ff34;
+  color: white;
 }
 
 td.perdida {
-  color: white;
-  font-weight: bold;
   background: red;
-}
-@import '../assets/home.css'
-
+  font-weight: bold;
+  color: white;
+}/* Styles remain the same as in the previous code */
 </style>

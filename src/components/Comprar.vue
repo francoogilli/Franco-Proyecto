@@ -67,7 +67,7 @@ export default {
         maximumFractionDigits: 2,
       });
     }
-    return '0.00';
+    
   },
 
     ...mapState({

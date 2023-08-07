@@ -5,44 +5,63 @@
         query_stats
       </span>
       <button @click="mostrarModal">Estado actual</button>
+      <button @click="mostrarGrafico">Composicion</button>
+
     </div>
   </div>
 
-  <div class="modal" id="modalEstadoActual" v-show="mostrar">
-    <table>
-      <thead>
-        <tr>
-          <th>Crypto</th>
-          <th>Cantidad Neta</th>
-          <th>Valor en Dinero</th>
-          
-          <th>Resultado</th> <!-- Nueva columna agregada -->
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(amount, crypto_code) in netAmounts" :key="crypto_code">
-          <td>{{ crypto_code }}</td>
-          <td>{{ amount.cryptoAmount.toFixed(6) }}</td>
-          <td>${{ amount.valueInMoney.toLocaleString('es-AR') }}</td>
-          
-          <td :class="{'ganancia': gananciaPerdida(amount) > 0, 'perdida': gananciaPerdida(amount) < 0}">
-        ${{ gananciaPerdida(amount).toFixed(2) }}
-      </td>
-        </tr>
-      </tbody>
-    </table>
-    <span class="material-symbols-outlined" id="cerrarSpan" @click="mostrar = false">close</span>
+  <div v-if="mostrar" class="modal-overlay">
+    <div class="modal" id="modalEstadoActual" v-show="mostrar">
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Crypto</th>
+            <th>Cantidad Neta</th>
+            <th>Valor en Dinero</th>          
+            <th>Resultado</th> 
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(amount, crypto_code) in netAmounts" :key="crypto_code">
+            <td>{{ crypto_code }}</td>
+            <td>{{ amount.cryptoAmount.toFixed(6) }}</td>
+            <td>${{ amount.valueInMoney.toLocaleString('es-AR') }}</td>         
+            <td :class="{'ganancia': resultado(amount) > 0, 'perdida': resultado(amount) < 0}">
+          ${{ resultado(amount).toFixed(2) }}
+        </td>
+          </tr>
+        </tbody>
+      </table>
+      <span class="material-symbols-outlined" id="cerrarSpan" @click="mostrar = false">close</span>
+    </div>
   </div>
+
+  <div v-if="mostrarGrafica" class="modal-overlay">
+    <div class="modal" id="modalGrafica" v-show="mostrarGrafica">
+      
+      <div class="chart-container">
+        <CircularChart :labels="cryptoLabels" :data="cryptoAmounts" />
+      </div>
+      <span class="material-symbols-outlined" id="cerrarSpan" @click="mostrarGrafica = false">close</span>
+    </div>
+  </div>
+  
 </template>
 
 <script>
+import CircularChart from './CircularChart.vue'; 
 import { mapState } from 'vuex';
 import axios from 'axios';
 
 export default {
   name: 'EstadoActual',
+  components: {
+    CircularChart, // Registrar el componente CircularChart
+  },
   data() {
     return {
+      mostrarGrafica:false,
       mostrar: false,
       netAmounts: {},
     };
@@ -51,14 +70,20 @@ export default {
     ...mapState({
       usuario: "usuario",
     }),
+    cryptoLabels() {
+      return Object.keys(this.netAmounts);
+    },
+    cryptoAmounts() {
+      return Object.values(this.netAmounts).map(amount => amount.cryptoAmount.toFixed(6));
+    },
   },
   methods: {
-    gananciaPerdida(amount) {
+    resultado(amount) {
       return amount.ganancia + amount.askInMoney;
     },
     async fetchTransactions(userId) {
-      const apiUrl = `https://laboratorio-36cf.restdb.io/rest/transactions?q={"user_id": "${userId}"}`;
-      const apiKey = '64a5ccf686d8c5d256ed8fce'; // Reemplaza "TU_API_KEY" por tu API Key proporcionada por la API
+      const apiUrl = `https://labor3-d60e.restdb.io/rest/transactions?q={"user_id": "${userId}"}`;
+      const apiKey = '64a2e9bc86d8c525a3ed8f63'; 
 
       const config = {
         headers: {
@@ -140,6 +165,16 @@ export default {
         console.error('Error en el proceso:', error);
       }
     },
+    async mostrarGrafico() {
+      this.mostrarGrafica = true; // Show the modal
+
+      try {
+        const transactions = await this.fetchTransactions(this.usuario);
+        this.netAmounts = await this.calculateNetAmountByCrypto(transactions);
+      } catch (error) {
+        console.error('Error en el proceso:', error);
+      }
+    },
   },
 
   async mounted() {
@@ -201,5 +236,14 @@ td.perdida {
   background: red;
   font-weight: bold;
   color: white;
-}/* Styles remain the same as in the previous code */
+}
+
+#modalGrafica {
+  width: 41.1875rem;
+  height: 40.625rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 </style>

@@ -18,6 +18,7 @@ import Vender from'@/components/Vender.vue';
 import EstadoActual from '@/components/EstadoActual.vue';
 import Historial from '@/components/Historial.vue';
 
+
 export default {
   name: 'Home',
   components: {

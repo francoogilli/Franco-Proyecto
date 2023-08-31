@@ -6,7 +6,8 @@
         <button @click="mostrarHistorial">Historial</button>
       </div>
     </div>
-
+  <!-- Modal del Historial -->
+  <div v-if="mostrar" class="modal-overlay">
     <div class="modal" id="modalTable" v-show="mostrar">
       <table>
         <thead>
@@ -25,43 +26,43 @@
             <td>{{ transaction.action }}</td>
             <td>{{ transaction.crypto_amount }}</td>
             <td>${{ transaction.money }}</td>
-            <td>{{ formatDate(transaction.datetime) }}</td>
+            <td>{{ formatearFecha(transaction.datetime) }}</td>
             <td>
-              <button class="btn-view" @click="showDetails(transaction)">Ver</button>
-              <button class="btn-edit" @click="editTransaction(transaction)">Editar</button>
-              <button class="btn-delete" @click="deleteTransaction(transaction._id)">Borrar</button>
+              <button class="btn-view" @click="mostrarTransaccion(transaction)">Ver</button>
+              <button class="btn-edit" @click="editarTransaccion(transaction)">Editar</button>
+              <button class="btn-delete" @click="borrarTransaccion(transaction._id)">Borrar</button>
             </td>
           </tr>
         </tbody>
       </table>
       <span class="material-symbols-outlined" id="cerrarSpan" @click="mostrar = false">close</span>
     </div>
-
+  
 
 
     <!-- Modal para editar transacción -->
-    <div v-if="editingTransaction" class="modal" id="modal-editar">
+    <div v-if="editarTransacción" class="modal" id="modal-editar">
       <h2>Editar transacción</h2>
       <table>
         <tr>
           <td><strong>Acción:</strong></td>
-          <td><input v-model="editedTransaction.action" type="text" /></td>
+          <td><input v-model="transaccionEditada.action" type="text" /></td>
         </tr>
         <tr>
           <td><strong>Crypto:</strong></td>
-          <td><input v-model="editedTransaction.crypto_code" type="text" /></td>
+          <td><input v-model="transaccionEditada.crypto_code" type="text" /></td>
         </tr>
         <tr>
           <td><strong>Cantidad:</strong></td>
-          <td><input v-model="editedTransaction.crypto_amount" type="number" /></td>
+          <td><input v-model="transaccionEditada.crypto_amount" type="number" /></td>
         </tr>
         <tr>
           <td><strong>Dinero:</strong></td>
-          <td><input v-model="editedTransaction.money" type="number" step="0.01" /></td>
+          <td><input v-model="transaccionEditada.money" type="number" step="0.01" /></td>
         </tr>
         <tr>
           <td><strong>Fecha:</strong></td>
-          <td><input v-model="editedTransaction.datetime" type="date" /></td>
+          <td><input v-model="transaccionEditada.datetime" type="date" /></td>
         </tr>
         <div>
         <div class="button-container">
@@ -75,33 +76,34 @@
 
 
     <!-- Modal para mostrar los detalles de la transacción seleccionada -->
-    <div v-if="selectedTransaction" class="modal" id="modal-ver">
+    <div v-if="transaccionSeleccionada" class="modal" id="modal-ver">
       <h2>Detalles de la transacción</h2>
       <table>
         <tr>
           <td><strong>Acción:</strong></td>
-          <td>{{ selectedTransaction.action }}</td>
+          <td>{{ transaccionSeleccionada.action }}</td>
         </tr>
         <tr>
           <td><strong>Crypto:</strong></td>
-          <td>{{ selectedTransaction.crypto_code }}</td>
+          <td>{{ transaccionSeleccionada.crypto_code }}</td>
         </tr>
         <tr>
           <td><strong>Cantidad:</strong></td>
-          <td>{{ selectedTransaction.crypto_amount }}</td>
+          <td>{{ transaccionSeleccionada.crypto_amount }}</td>
         </tr>
         <tr>
           <td><strong>Dinero:</strong></td>
-          <td>${{ selectedTransaction.money }}</td>
+          <td>${{ transaccionSeleccionada.money }}</td>
         </tr>
         <tr>
           <td><strong>Fecha:</strong></td>
-          <td>{{ formatDate(selectedTransaction.datetime) }}</td>
+          <td>{{ formatearFecha(transaccionSeleccionada.datetime) }}</td>
         </tr>
       </table>
-      <span class="material-symbols-outlined" id="cerrarSpan" @click="selectedTransaction = null">close</span>
+      <span class="material-symbols-outlined" id="cerrarSpan" @click="transaccionSeleccionada = null">close</span>
     </div>
   </div>
+</div>
 </template>
 
 <script>
@@ -112,60 +114,62 @@ export default {
   name: 'Historial',
   data() {
     return {
-      mostrar: false,
-      transactions: [], // Matriz para almacenar transacciones obtenidas
-      selectedTransaction: null, // Nueva propiedad para almacenar datos de transacciones seleccionados
-      editingTransaction: null, // Nueva propiedad para almacenar la transacción que se está editando
-      editedTransaction: {}, // Nueva propiedad para almacenar los datos de transacción editados
+      mostrar: false, // Controla la visibilidad del modal de historial
+      transactions: [], // Almacena las transacciones
+      transaccionSeleccionada: null,  // Almacena la transacción seleccionada para ver detalles
+      editarTransacción: null,  // Almacena la transacción que se está editando
+      transaccionEditada: {}, // Almacena los datos editados de la transacción
     };
   },
   computed: {
+    // Se obtiene el estado de usuario de Vuex
     ...mapState({
       usuario: "usuario",
     })
   },
   methods: {
-    formatDate(dateString) {
+    formatearFecha(dateString) {
+      // Se modifica el formato de la fecha al requerido
       const utcDate = new Date(dateString);
       const date = new Date(utcDate.getTime() - (utcDate.getTimezoneOffset() * -60000));
-      
-      // Use toLocaleString() to format the date and time in the local timezone
       const options = {
         day: 'numeric',
         month: 'numeric',
         year: 'numeric',
         hour: 'numeric',
         minute: 'numeric',
-        hour12: false // Use 24-hour format
+        hour12: false 
       };
-      const formattedDate = date.toLocaleString('es-AR', options);
+      const fechaFormateada = date.toLocaleString('es-AR', options);
       
-      return formattedDate;
+      return fechaFormateada;
     },
-    deleteTransaction(transactionId) {
-      const apiUrl = `https://laboratorio-36cf.restdb.io/rest/transactions/${transactionId}`;
+    // Se borran los datos de la transaccion seleccionada
+    borrarTransaccion(transactionId) {
+      const apiUrl = `https://labor3-d60e.restdb.io/rest/transactions/${transactionId}`;
 
       axios.delete(apiUrl, {
         headers: {
           'Content-Type': 'application/json',
-          'x-apikey': '64a5ccf686d8c5d256ed8fce',
+          'x-apikey': '64a2e9bc86d8c525a3ed8f63',
         },
       })
       .then(response => {
-        // Remove the deleted transaction from the local array
+        // Se elimina la transacción borrada de la array local
         this.transactions = this.transactions.filter(transaction => transaction._id !== transactionId);
       })
       .catch(error => {
         console.error('Error al eliminar la transacción:', error);
       });
     },
-    fetchTransactions() {
+    // Se obtienen las transacciones almacenadas para el valor de usuario ingresado
+    buscarTransacciones() {
       const userId = this.usuario;
 
-      axios.get(`https://laboratorio-36cf.restdb.io/rest/transactions?q={"user_id": "${userId}"}`, {
+      axios.get(`https://labor3-d60e.restdb.io/rest/transactions?q={"user_id": "${userId}"}`, {
         headers: {
           'Content-Type': 'application/json',
-          'x-apikey': '64a5ccf686d8c5d256ed8fce',
+          'x-apikey': '64a2e9bc86d8c525a3ed8f63',
         },
       })
       .then(response => {
@@ -176,54 +180,55 @@ export default {
       });
     },
     mostrarHistorial() {
-      // Actualizar el historial al abrir el modal
-      this.fetchTransactions();
-      // Mostrar el modal
+      // Se actualiza el historial al abrir el modal
+      this.buscarTransacciones();
+      // Se muestra el modal
       this.mostrar = true;
     },
-    showDetails(transaction) {
-      this.selectedTransaction = transaction;
+    mostrarTransaccion(transaction) {
+      this.transaccionSeleccionada = transaction;
     },
-    editTransaction(transaction) {
-      this.editingTransaction = transaction;
-      // Crea una copia de la transacción para evitar modificar el original hasta guardar
-      this.editedTransaction = { ...transaction };
+    editarTransaccion(transaction) {
+      this.editarTransacción = transaction;
+      // Se crea una copia de la transacción para evitar modificar el original hasta guardar
+      this.transaccionEditada = { ...transaction };
     },
     guardarEditar() {
-      const apiUrl = `https://laboratorio-36cf.restdb.io/rest/transactions/${this.editingTransaction._id}`;
+      // Se guardan los cambios realizados en una transacción editada
+      const apiUrl = `https://labor3-d60e.restdb.io/rest/transactions/${this.editarTransacción._id}`;
 
       axios
-        .patch(apiUrl, this.editedTransaction, {
+        .patch(apiUrl, this.transaccionEditada, {
           headers: {
             'Content-Type': 'application/json',
-            'x-apikey': '64a5ccf686d8c5d256ed8fce', // Replace with your RestDB API Key
+            'x-apikey': '64a2e9bc86d8c525a3ed8f63',
           },
         })
         .then(response => {
-          // Update the local transactions array with the edited transaction
+          //Se actualiza el array de transacciones locales con la transacción editada
           const index = this.transactions.findIndex(
-            transaction => transaction._id === this.editingTransaction._id
+            transaction => transaction._id === this.editarTransacción._id
           );
           if (index !== -1) {
-            this.transactions[index] = this.editedTransaction;
+            this.transactions[index] = this.transaccionEditada;
           }
 
-          // Close the edit modal
-          this.editingTransaction = null;
-          this.editedTransaction = {};
+          // Cerrar el modal de edición
+          this.editarTransacción = null;
+          this.transaccionEditada = {};
         })
         .catch(error => {
           console.error('Error al editar la transacción:', error);
         });
     },
     cancelarEditar() {
-      this.editingTransaction = null;
-      this.editedTransaction = {};
+      this.editarTransacción = null;
+      this.transaccionEditada = {};
     },
   },
   mounted() {
-    // Se llama a fetchTransactions() al montar el componente
-    this.fetchTransactions();
+    // Se llama a buscarTransacciones() al montar el componente
+    this.buscarTransacciones();
   }
 }
 </script>
@@ -278,7 +283,7 @@ td button {
 .btn-view { 
   background-color: #00ff93;
   color: white;
-  cursor: pointer; /* Add cursor property to indicate it's clickable */
+  cursor: pointer; 
 } 
 .btn-view:active{
   background:#5affba;
@@ -291,7 +296,7 @@ td button {
   background: #4981fae0;
 }
 .btn-delete {
-  background-color: #ff1100;
+  background-color: #ff2919;
   color: white;
 }
 .btn-delete:active{
@@ -364,5 +369,24 @@ td:nth-child(1) {
   font-weight: bold;
 }
 
+
+::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+}
+
+
+::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 12px;
+}
  @import '../assets/home.css'
 </style>

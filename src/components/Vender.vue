@@ -7,33 +7,41 @@
       <button id="comprar" @click="mostrar = true">Vender</button>
     </div>
   </div>
-
-  <div class="modal" id="modal_comprar" v-show="mostrar">
-    <div class="dropdown">
-      <div class="select" @click="toggleMenu" :class="{ 'select-clicked': menuOpen }">
-        <span class="selected">{{ selectedOption }}</span>
-        <span class="material-symbols-outlined" id="expand_more" :class="{ rotated: menuOpen }">
-          expand_more
-        </span>
+  <!-- Modal de venta -->
+  <div v-if="mostrar" class="modal-overlay">
+    <div class="modal" id="modal_comprar" v-show="mostrar">
+      <div class="dropdown">
+        <div class="select" @click="menuDesplegable" :class="{ 'select-clicked': abrirMenu }">
+          <span class="selected">{{ opcionSeleccionada }}</span>
+          <span class="material-symbols-outlined" id="expand_more" :class="{ rotated: abrirMenu }">
+            expand_more
+          </span>
+        </div>
+        <ul class="menu" :class="{ 'menu-open': abrirMenu }">
+          <li v-for="(opcion, index) in opciones" :key="index" @click="seleccionarOpcion(opcion)" :class="{ active: opcion === opcionSeleccionada }">
+            {{ opcion }}
+          </li>
+        </ul>
       </div>
-      <ul class="menu" :class="{ 'menu-open': menuOpen }">
-        <li v-for="(opcion, index) in opciones" :key="index" @click="selectOption(opcion)" :class="{ active: opcion === selectedOption }">
-          {{ opcion }}
-        </li>
-      </ul>
-    </div>
-    <div class="input-field">
-      <input type="number" min="0" v-model="cantidad" placeholder="Cantidad" />
-    </div>
-    <input type="submit" value="Vender" class="btn solid" id="ingresar-btn" @click="vender" />
-    <div class="card">
-      <div class="wrapper">
-        <p id="mostrarPrecio">{{cantidad}} {{ selectedOption }} = ${{precioTotal}}</p>
+    <!-- Campo de entrada para la cantidad a vender -->
+      <div class="input-field">
+        <input type="number" min="0" v-model="cantidad" placeholder="Cantidad" />
       </div>
+    <!-- Botón de venta -->
+      <input type="submit" value="Vender" class="btn solid" id="ingresar-btn" @click="vender" />
+    <!-- Mensaje de venta exitosa -->
+    <div v-if="ventaExitosa" class="success-message">¡Venta realizada correctamente!</div>
+    <!-- Tarjeta para mostrar el precio total -->
+      <div class="card">
+        <div class="wrapper">
+          <p id="mostrarPrecio">{{cantidad}} {{ opcionSeleccionada }} = ${{precioTotal}}</p>
+        </div>
+      </div>
+    <!-- Botón para cerrar el modal -->
+      <span class="material-symbols-outlined" id="cerrarSpan" @click="mostrar = false">
+        close
+      </span>
     </div>
-    <span class="material-symbols-outlined" id="cerrarSpan" @click="mostrar = false">
-      close
-    </span>
   </div>
 </template>
 
@@ -45,66 +53,76 @@ export default {
   name: 'Vender',
   data() {
     return {
-      mostrar: false,
-      menuOpen: false,
+      mostrar: false, // Estado para controlar la visibilidad del modal
+      abrirMenu: false, // Estado para controlar el menú desplegable de criptomonedas
+      // Lista de opciones de criptomonedas ↓↓↓↓
       opciones: ["AAVE" , "ADA" , "ALGO" , "AXS" , "BAT" , "BCH" , "BTC" , "BUSD" , "CHZ" , "DAI" , "DOGE" , "DOT" , "ETH" , "FTM" , "LINK" , "LTC" , "MANA" , "MATIC" , "PAXG" , "SAND" , "SHIB" , "SOL" , "TRX" , "UNI" , "USDC" , "USDP" , "USDT" , "XRP"],
-      selectedOption: "AAVE",
-      cantidad: 1, // La cantidad ingresada por defecto será 1
-      precio: null, // Para almacenar el precio obtenido de la API
-      fechaHoraCompra: null
+      opcionSeleccionada: "AAVE", // Opción de criptomoneda seleccionada por defecto
+      cantidad: 1, // Cantidad de criptomoneda a comprar
+      precio: null, // Precio actual de la criptomoneda
+      fechaHoraCompra: null, // Fecha y hora de la compra
+      ventaExitosa: false // Estado para mostrar el mensaje de "venta exitosa"
     };
   },
   computed: {
+    // Cálculo del precio total de la venta    
     precioTotal() {
-    if (this.precio && this.cantidad) {
-      const precioTotal = this.cantidad * this.precio;
-      return precioTotal.toLocaleString('en-US', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-    }
-    return '0.00';
-  },
+      if (this.precio && this.cantidad) {
+        const precioTotal = (this.cantidad * this.precio).toFixed(2);
+        return precioTotal;
+      }
+      return '0.00';
+    },
+    // Mapeo del estado del usuario desde Vuex
     ...mapState({
       usuario:"usuario",
     })
   },
   methods: {
-    toggleMenu() {
-      this.menuOpen = !this.menuOpen;
+    // Cambiar el estado del menú desplegable
+    menuDesplegable() {
+      this.abrirMenu = !this.abrirMenu;
     },
-    selectOption(opcion) {
-      this.selectedOption = opcion;
-      this.menuOpen = false;
+    // Seleccionar una opción de criptomoneda
+    seleccionarOpcion(opcion) {
+      this.opcionSeleccionada = opcion;
+      this.abrirMenu = false;
     },
+    // Realizar la compra de criptomonedas
     vender() {
-
       if (this.cantidad > 0) {
         const fechaHoraActual = new Date();
-        
-        // Formatear la fecha y hora en "DD-MM-YYYY hh:mm"
+        // Obtener componentes de la fecha y hora actual
         const dia = String(fechaHoraActual.getDate()).padStart(2, '0');
         const mes = String(fechaHoraActual.getMonth() + 1).padStart(2, '0');
         const anio = fechaHoraActual.getFullYear();
         const horas = String(fechaHoraActual.getHours()).padStart(2, '0');
         const minutos = String(fechaHoraActual.getMinutes()).padStart(2, '0');
-
+        // Dar el formato de fecha y hora de la compra
         this.fechaHoraCompra = `${mes}-${dia}-${anio} ${horas}:${minutos}`;
+        // Se envian los datos para la solicitud POST de compra
         let json={ 
           "user_id":this.usuario,
           "action": "sale", 
-          "crypto_code":this.selectedOption, 
+          "crypto_code":this.opcionSeleccionada, 
           "crypto_amount":this.cantidad, 
           "money":this.precioTotal,
           "datetime":this.fechaHoraCompra 
         }
-        axios.post('https://laboratorio-36cf.restdb.io/rest/transactions',json,{
+        // Realizar la solicitud POST a la API
+        axios.post('https://labor3-d60e.restdb.io/rest/transactions',json,{
           headers:{
             'Content-Type':'application/json',
-            'x-apikey':'64a5ccf686d8c5d256ed8fce',
+            'x-apikey':'64a2e9bc86d8c525a3ed8f63',
           },
         }).then(data=>{
           console.log(data)
+          // Mostrar mensaje de compra exitosa y luego se oculta
+          this.ventaExitosa = true;
+          setTimeout(() => {
+            this.ventaExitosa = false; 
+              
+          }, 3000);
         })
         .catch(error => {
           console.error('Error al realizar la solicitud POST:', error);
@@ -115,9 +133,10 @@ export default {
 
     },
     actualizarPrecio() {
-      // Validamos que la cantidad sea mayor que cero antes de hacer la petición
+      // Se Actualiza el precio de la criptomoneda
       if (this.cantidad > 0) {
-        axios.get(`https://criptoya.com/api/bitso/${this.selectedOption.toLowerCase()}/ars/${this.cantidad}`)
+        // Obtener el precio de la cripto atraves de la API de CryptoYa
+        axios.get(`https://criptoya.com/api/bitso/${this.opcionSeleccionada.toLowerCase()}/ars/${this.cantidad}`)
           .then(response => {
             this.precio = parseFloat(response.data.bid);
           })
@@ -126,18 +145,20 @@ export default {
             this.precio = null;
           });
       } else {
-        // Si la cantidad es cero o negativa, dejamos el precio como nulo
+        
         this.precio = null;
       }
     },
   },
   watch: {
-    selectedOption: {
+    // Actualizamos el precio cuando la opción de criptomoneda cambie
+    opcionSeleccionada: {
       handler() {
         this.actualizarPrecio();
       },
     },
     cantidad: {
+      // Actualizamos el precio cuando la cantidad seleccionada cambie
       handler() {
         this.actualizarPrecio();
       },
@@ -156,38 +177,18 @@ export default {
 .rotated {
   transform: rotate(180deg);
   transition: transform 0.2s ease;
-
 }
-
-.menu {
-  max-height: 341px; /* Set the maximum height for the menu to create a scrollbar */
-  overflow-y: auto; /* Enable vertical scrollbar when the content overflows */
-  scrollbar-width: thin; /* For Firefox */
-}
-
-/* Customize the scrollbar for WebKit browsers (Chrome, Safari, Opera) */
-.menu::-webkit-scrollbar {
-  width: 8px;
-}
-
-.menu::-webkit-scrollbar-thumb {
-  background-color: #888;
-  border-radius: 8px;
-}
-
-.menu::-webkit-scrollbar-thumb:hover {
-  background-color: #555;
-}
-
-/* Customize the scrollbar for other browsers */
-
-
-.menu::-webkit-scrollbar-thumb {
-  background-color: #888;
-}
-
-.menu::-webkit-scrollbar-thumb:hover {
-  background-color: #555;
+/*Estilos para el mensaje de 'Venta exitosa'*/
+.success-message {
+  font-weight: bold;
+  position: fixed;
+  top: 70%; 
+  left: 50%; 
+  transform: translate(-50%, -50%); 
+  color:rgb(246 205 0);
+  width: 100%;
+  display: grid;
+  place-items: center;
 }
 @import '../assets/home.css'
 </style>

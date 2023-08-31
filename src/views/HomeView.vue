@@ -12,7 +12,6 @@
 </template>
 
 <script>
-import ComposicionCartera from '@/components/ComposicionCartera.vue';
 import NavBar from '@/components/NavBar.vue';
 import Comprar from'@/components/Comprar.vue';
 import Vender from'@/components/Vender.vue';
@@ -23,7 +22,7 @@ import Historial from '@/components/Historial.vue';
 export default {
   name: 'Home',
   components: {
-    NavBar,Comprar,Vender,EstadoActual,Historial,ComposicionCartera,
+    NavBar,Comprar,Vender,EstadoActual,Historial
   }
 }
 </script>

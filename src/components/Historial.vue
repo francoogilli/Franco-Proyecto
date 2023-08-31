@@ -6,7 +6,7 @@
         <button @click="mostrarHistorial">Historial</button>
       </div>
     </div>
-  
+  <!-- Modal del Historial -->
   <div v-if="mostrar" class="modal-overlay">
     <div class="modal" id="modalTable" v-show="mostrar">
       <table>
@@ -114,36 +114,37 @@ export default {
   name: 'Historial',
   data() {
     return {
-      mostrar: false,
-      transactions: [], // Matriz para almacenar transacciones obtenidas
-      transaccionSeleccionada: null, // Nueva propiedad para almacenar datos de transacciones seleccionados
-      editarTransacción: null, // Nueva propiedad para almacenar la transacción que se está editando
-      transaccionEditada: {}, // Nueva propiedad para almacenar los datos de transacción editados
+      mostrar: false, // Controla la visibilidad del modal de historial
+      transactions: [], // Almacena las transacciones
+      transaccionSeleccionada: null,  // Almacena la transacción seleccionada para ver detalles
+      editarTransacción: null,  // Almacena la transacción que se está editando
+      transaccionEditada: {}, // Almacena los datos editados de la transacción
     };
   },
   computed: {
+    // Se obtiene el estado de usuario de Vuex
     ...mapState({
       usuario: "usuario",
     })
   },
   methods: {
     formatearFecha(dateString) {
+      // Se modifica el formato de la fecha al requerido
       const utcDate = new Date(dateString);
       const date = new Date(utcDate.getTime() - (utcDate.getTimezoneOffset() * -60000));
-      
-      // Use toLocaleString() to format the date and time in the local timezone
       const options = {
         day: 'numeric',
         month: 'numeric',
         year: 'numeric',
         hour: 'numeric',
         minute: 'numeric',
-        hour12: false // Use 24-hour format
+        hour12: false 
       };
       const fechaFormateada = date.toLocaleString('es-AR', options);
       
       return fechaFormateada;
     },
+    // Se borran los datos de la transaccion seleccionada
     borrarTransaccion(transactionId) {
       const apiUrl = `https://labor3-d60e.restdb.io/rest/transactions/${transactionId}`;
 
@@ -154,13 +155,14 @@ export default {
         },
       })
       .then(response => {
-        // Remove the deleted transaction from the local array
+        // Se elimina la transacción borrada de la array local
         this.transactions = this.transactions.filter(transaction => transaction._id !== transactionId);
       })
       .catch(error => {
         console.error('Error al eliminar la transacción:', error);
       });
     },
+    // Se obtienen las transacciones almacenadas para el valor de usuario ingresado
     buscarTransacciones() {
       const userId = this.usuario;
 
@@ -178,9 +180,9 @@ export default {
       });
     },
     mostrarHistorial() {
-      // Actualizar el historial al abrir el modal
+      // Se actualiza el historial al abrir el modal
       this.buscarTransacciones();
-      // Mostrar el modal
+      // Se muestra el modal
       this.mostrar = true;
     },
     mostrarTransaccion(transaction) {
@@ -188,21 +190,22 @@ export default {
     },
     editarTransaccion(transaction) {
       this.editarTransacción = transaction;
-      // Crea una copia de la transacción para evitar modificar el original hasta guardar
+      // Se crea una copia de la transacción para evitar modificar el original hasta guardar
       this.transaccionEditada = { ...transaction };
     },
     guardarEditar() {
+      // Se guardan los cambios realizados en una transacción editada
       const apiUrl = `https://labor3-d60e.restdb.io/rest/transactions/${this.editarTransacción._id}`;
 
       axios
         .patch(apiUrl, this.transaccionEditada, {
           headers: {
             'Content-Type': 'application/json',
-            'x-apikey': '64a2e9bc86d8c525a3ed8f63', // Replace with your RestDB API Key
+            'x-apikey': '64a2e9bc86d8c525a3ed8f63',
           },
         })
         .then(response => {
-          // Update the local transactions array with the edited transaction
+          //Se actualiza el array de transacciones locales con la transacción editada
           const index = this.transactions.findIndex(
             transaction => transaction._id === this.editarTransacción._id
           );
@@ -210,7 +213,7 @@ export default {
             this.transactions[index] = this.transaccionEditada;
           }
 
-          // Close the edit modal
+          // Cerrar el modal de edición
           this.editarTransacción = null;
           this.transaccionEditada = {};
         })
@@ -280,7 +283,7 @@ td button {
 .btn-view { 
   background-color: #00ff93;
   color: white;
-  cursor: pointer; /* Add cursor property to indicate it's clickable */
+  cursor: pointer; 
 } 
 .btn-view:active{
   background:#5affba;
@@ -293,7 +296,7 @@ td button {
   background: #4981fae0;
 }
 .btn-delete {
-  background-color: #ff1100;
+  background-color: #ff2919;
   color: white;
 }
 .btn-delete:active{
@@ -366,5 +369,24 @@ td:nth-child(1) {
   font-weight: bold;
 }
 
+
+::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+}
+
+
+::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 12px;
+}
  @import '../assets/home.css'
 </style>

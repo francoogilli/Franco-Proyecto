@@ -9,7 +9,7 @@
 
     </div>
   </div>
-
+  <!-- Modal del Estado Actual -->
   <div v-if="mostrar" class="modal-overlay">
     <div class="modal" id="modalEstadoActual" v-show="mostrar">
       
@@ -28,15 +28,15 @@
             <td>{{ amount.cryptoAmount.toFixed(6) }}</td>
             <td>${{ amount.valueInMoney.toLocaleString('es-AR') }}</td>         
             <td :class="{'ganancia': resultado(amount) > 0, 'perdida': resultado(amount) < 0}">
-          ${{ resultado(amount).toFixed(2) }}
-        </td>
+        {{ resultado(amount) > 0 ? '+' : '-' }}${{ Math.abs(resultado(amount)).toFixed(2) }}
+      </td>
           </tr>
         </tbody>
       </table>
       <span class="material-symbols-outlined" id="cerrarSpan" @click="mostrar = false">close</span>
     </div>
   </div>
-
+  <!-- Modal donde se muestra la Grafica -->
   <div v-if="mostrarGrafica" class="modal-overlay">
     <div class="modal" id="modalGrafica" v-show="mostrarGrafica">
       
@@ -57,7 +57,7 @@ import axios from 'axios';
 export default {
   name: 'EstadoActual',
   components: {
-    CircularChart, // Registrar el componente CircularChart
+    CircularChart,
   },
   data() {
     return {
@@ -82,6 +82,7 @@ export default {
       return amount.ganancia + amount.askInMoney;
     },
     async fetchTransactions(userId) {
+      // Obtener transacciones del usuario desde la API
       const apiUrl = `https://labor3-d60e.restdb.io/rest/transactions?q={"user_id": "${userId}"}`;
       const apiKey = '64a2e9bc86d8c525a3ed8f63'; 
 
@@ -101,8 +102,8 @@ export default {
     },
 
     async fetchCryptoValue(crypto_code) {
+      // Obtener valor de la criptomoneda desde la API
       const apiUrl = `https://criptoya.com/api/bitso/${crypto_code.toLowerCase()}/ars/1`;
-
       try {
         const response = await axios.get(apiUrl);
         const cryptoValue = parseFloat(response.data.bid);
@@ -116,9 +117,11 @@ export default {
     },
 
     async calculateNetAmountByCrypto(transactions) {
+      // Se calculan las cantidades netas por cripto
       const cryptoAmounts = {};
 
       for (const transaction of transactions) {
+        // Se obtienen los demas datos de la transacción
         const { crypto_code, action, crypto_amount, money } = transaction;
         const amount = parseFloat(crypto_amount);
         const moneyValue = parseFloat(money);
@@ -135,19 +138,18 @@ export default {
 
         if (action === 'purchase') {
           cryptoAmounts[crypto_code].cryptoAmount += amount;
-          cryptoAmounts[crypto_code].ganancia -= moneyValue; // Restar el valor en dinero (money) para compras
+          cryptoAmounts[crypto_code].ganancia -= moneyValue;
         } else if (action === 'sale') {
           cryptoAmounts[crypto_code].cryptoAmount -= amount;
-          cryptoAmounts[crypto_code].ganancia += moneyValue; // Sumar el valor en dinero (money) para ventas
+          cryptoAmounts[crypto_code].ganancia += moneyValue; 
         }
-
+        // Obtenemos el valor de la criptomoneda y calculamos el valor en dinero
         const [valueCrypto, cryptoValue] = await this.fetchCryptoValue(crypto_code);
         const valueInMoney = cryptoValue * cryptoAmounts[crypto_code].cryptoAmount;
         const askInMoney = valueCrypto * cryptoAmounts[crypto_code].cryptoAmount;
         cryptoAmounts[crypto_code].valueInMoney = valueInMoney;
         cryptoAmounts[crypto_code].askInMoney = askInMoney;
 
-        // Agregar el cálculo de ganancia o pérdida considerando el precio de compra
         const precioCompraTotal = cryptoAmounts[crypto_code].precioCompra * cryptoAmounts[crypto_code].cryptoAmount;
         cryptoAmounts[crypto_code].ganancia += precioCompraTotal;
       }
@@ -156,8 +158,8 @@ export default {
     },
 
     async mostrarModal() {
-      this.mostrar = true; // Show the modal
-
+      // Mostrar el modal de estado actual
+      this.mostrar = true; 
       try {
         const transactions = await this.fetchTransactions(this.usuario);
         this.netAmounts = await this.calculateNetAmountByCrypto(transactions);
@@ -166,8 +168,8 @@ export default {
       }
     },
     async mostrarGrafico() {
-      this.mostrarGrafica = true; // Show the modal
-
+      // Mostrar el modal de la gráfica
+      this.mostrarGrafica = true; 
       try {
         const transactions = await this.fetchTransactions(this.usuario);
         this.netAmounts = await this.calculateNetAmountByCrypto(transactions);
@@ -178,8 +180,7 @@ export default {
   },
 
   async mounted() {
-    const userId = this.usuario; // Reemplaza "TU_USER_ID" por el ID del usuario para el cual deseas obtener las transacciones
-
+    const userId = this.usuario; 
     try {
       const transactions = await this.fetchTransactions(userId);
       this.netAmounts = await this.calculateNetAmountByCrypto(transactions);
@@ -199,7 +200,7 @@ table {
   border-collapse: collapse;
   width: 100%;
   margin-top: 1.375rem;
-  border-radius: 20px; /* Agregamos el border-radius para esquinas redondeadas */
+  border-radius: 20px; 
   overflow: hidden; 
   font-weight: 400;
 }
@@ -225,7 +226,6 @@ td:nth-child(1) {
 
 @import '../assets/home.css';
 
-/* Estilos para las celdas de ganancia o pérdida */
 td.ganancia {
   background: rgb(0, 255, 0);
   font-weight: bold;

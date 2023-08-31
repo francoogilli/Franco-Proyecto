@@ -1,4 +1,4 @@
-<!-- CircularChart.vue -->
+
 <template>
     <div class="chart-title">
       <h2>Composición de la cartera</h2>

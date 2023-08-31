@@ -7,8 +7,10 @@
       <button id="comprar" @click="mostrar = true">Comprar</button>
     </div>
   </div>
+  <!-- Modal de compra -->
  <div v-if="mostrar" class="modal-overlay">
   <div class="modal" id="modal_comprar" v-show="mostrar">
+    <!-- Menú desplegable para seleccionar la criptomoneda -->
     <div class="dropdown">
       <div class="select" @click="menuDesplegable" :class="{ 'select-clicked': abrirMenu }">
         <span class="selected">{{ opcionSeleccionada }}</span>
@@ -22,17 +24,21 @@
         </li>
       </ul>
     </div>
+    <!-- Campo de entrada para la cantidad a comprar -->
     <div class="input-field">
       <input type="number" min="0" v-model="cantidad" placeholder="Cantidad" />
     </div>
+    <!-- Botón de compra -->
     <input type="submit" value="Comprar" class="btn solid" id="ingresar-btn" @click="comprar" />
-    <div v-if="compraExitosa" class="success-message">Compra realizada exitosamente</div>
-
+    <!-- Mensaje de compra exitosa -->
+    <div v-if="compraExitosa" class="success-message">¡Compra realizada correctamente!</div>
+    <!-- Tarjeta para mostrar el precio total -->
     <div class="card">
       <div class="wrapper">
         <p id="mostrarPrecio">{{cantidad}} {{ opcionSeleccionada }} = ${{precioTotal}}</p>
       </div>
     </div>
+    <!-- Botón para cerrar el modal -->
     <span class="material-symbols-outlined" id="cerrarSpan" @click="mostrar = false">
       close
     </span>
@@ -48,53 +54,55 @@ export default {
   name: 'Comprar',
   data() {
     return {
-      mostrar: false,
-      abrirMenu: false,
+      mostrar: false, // Estado para controlar la visibilidad del modal
+      abrirMenu: false, // Estado para controlar el menú desplegable de criptomonedas
+      // Lista de opciones de criptomonedas ↓↓↓↓
       opciones: ["AAVE" , "ADA" , "ALGO" , "AXS" , "BAT" , "BCH" , "BTC" , "BUSD" , "CHZ" , "DAI" , "DOGE" , "DOT" , "ETH" , "FTM" , "LINK" , "LTC" , "MANA" , "MATIC" , "PAXG" , "SAND" , "SHIB" , "SOL" , "TRX" , "UNI" , "USDC" , "USDP" , "USDT" , "XRP"],
-      opcionSeleccionada: "AAVE",
-      cantidad: 1, // La cantidad ingresada por defecto será 1
-      precio: null, // Para almacenar el precio obtenido de la API
-      fechaHoraCompra: null,
-      compraExitosa: false
+      opcionSeleccionada: "AAVE", // Opción de criptomoneda seleccionada por defecto
+      cantidad: 1, // Cantidad de criptomoneda a comprar
+      precio: null,  // Precio actual de la criptomoneda
+      fechaHoraCompra: null, // Fecha y hora de la compra
+      compraExitosa: false // Estado para mostrar el mensaje de "compra exitosa"
     };
   },
-  computed: {    
-  precioTotal() {
-    if (this.precio && this.cantidad) {
-      const precioTotal = this.cantidad * this.precio;
-      return precioTotal.toLocaleString('en-US', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-    }
-    
-  },
+  computed: {
+    // Cálculo del precio total de la compra    
+    precioTotal() {
+      if (this.precio && this.cantidad) {
+        const precioTotal = (this.cantidad * this.precio).toFixed(2);
+        return precioTotal;
+      }
+      return '0.00';
+    },
 
+    // Mapeo del estado del usuario desde Vuex
     ...mapState({
       usuario:"usuario",
     })
   },
   methods: {
+    // Cambiar el estado del menú desplegable
     menuDesplegable() {
       this.abrirMenu = !this.abrirMenu;
     },
+    // Seleccionar una opción de criptomoneda
     seleccionarOpcion(opcion) {
       this.opcionSeleccionada = opcion;
       this.abrirMenu = false;
     },
+    // Realizar la compra de criptomonedas
     comprar() {
-
       if (this.cantidad > 0) {
         const fechaHoraActual = new Date();
-        
-        // Formatear la fecha y hora en "DD-MM-YYYY hh:mm"
+        // Obtener componentes de la fecha y hora actual
         const dia = String(fechaHoraActual.getDate()).padStart(2, '0');
         const mes = String(fechaHoraActual.getMonth() + 1).padStart(2, '0');
         const anio = fechaHoraActual.getFullYear();
         const horas = String(fechaHoraActual.getHours()).padStart(2, '0');
         const minutos = String(fechaHoraActual.getMinutes()).padStart(2, '0');
-
+        // Dar el formato de fecha y hora de la compra
         this.fechaHoraCompra = `${mes}-${dia}-${anio} ${horas}:${minutos}`;
+        // Se envian los datos para la solicitud POST de compra
         let json={ 
           "user_id":this.usuario,
           "action": "purchase", 
@@ -103,6 +111,7 @@ export default {
           "money":this.precioTotal,
           "datetime":this.fechaHoraCompra 
         }
+        // Realizar la solicitud POST a la API
         axios.post('https://labor3-d60e.restdb.io/rest/transactions',json,{
           headers:{
             'Content-Type':'application/json',
@@ -110,9 +119,10 @@ export default {
           },
         }).then(data=>{
           console.log(data);
+          // Mostrar mensaje de compra exitosa y luego se oculta
           this.compraExitosa = true;
           setTimeout(() => {
-            this.compraExitosa = false; // Ocultar el mensaje después de 3 segundos
+            this.compraExitosa = false; 
               
           }, 3000);
         })
@@ -125,8 +135,9 @@ export default {
 
     },
     actualizarPrecio() {
-      // Validamos que la cantidad sea mayor que cero antes de hacer la petición
+      // Se Actualiza el precio de la criptomoneda
       if (this.cantidad > 0) {
+        // Obtener el precio de la cripto atraves de la API de CryptoYa
         axios.get(`https://criptoya.com/api/bitso/${this.opcionSeleccionada.toLowerCase()}/ars/${this.cantidad}`)
           .then(response => {
             this.precio = parseFloat(response.data.ask);
@@ -136,18 +147,20 @@ export default {
             this.precio = null;
           });
       } else {
-        // Si la cantidad es cero o negativa, dejamos el precio como nulo
+        
         this.precio = null;
       }
     },
   },
   watch: {
+    // Actualizamos el precio cuando la opción de criptomoneda cambie
     opcionSeleccionada: {
       handler() {
         this.actualizarPrecio();
       },
     },
     cantidad: {
+      // Actualizamos el precio cuando la cantidad seleccionada cambie
       handler() {
         this.actualizarPrecio();
       },
@@ -165,13 +178,14 @@ export default {
   transform: rotate(180deg);
   transition: transform 0.2s ease;
 }
+/*Estilos para el mensaje de 'Compra exitosa'*/
 .success-message {
-  font-weight: 600;
+  font-weight: 700;
   position: fixed;
-  top: 70%; /* Alinear el mensaje en el centro vertical de la pantalla */
-  left: 50%; /* Alinear el mensaje en el centro horizontal de la pantalla */
-  transform: translate(-50%, -50%); /* Centrar el mensaje exactamente en el centro */
-  color: #2eff59;
+  top: 70%; 
+  left: 50%; 
+  transform: translate(-50%, -50%);
+  color: rgb(0 255 104);;
   width: 100%;
   display: grid;
   place-items: center;

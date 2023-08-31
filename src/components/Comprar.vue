@@ -153,7 +153,7 @@ export default {
     },
   },
   watch: {
-    // Actualizamos el precio cuando la opción de criptomoneda cambie
+    // Actualizamos el precio cuando la opción de la criptomoneda cambie
     opcionSeleccionada: {
       handler() {
         this.actualizarPrecio();

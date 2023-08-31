@@ -124,7 +124,7 @@ export default {
 
     },
     actualizarPrecio() {
-      // Validamos que la cantidad sea mayor que cero antes de hacer la petición
+      // Validamos que la cantidad sea mayor que 0 antes de hacer la petición
       if (this.cantidad > 0) {
         axios.get(`https://criptoya.com/api/bitso/${this.selectedOption.toLowerCase()}/ars/${this.cantidad}`)
           .then(response => {
